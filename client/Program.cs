@@ -42,8 +42,6 @@ class ClientUDP
 
         //TODO: [Create endpoints and socket]
         Message MessageObj = new Message { MsgId = 1, MsgType = MessageType.Hello, Content = "Hello" };
-        string json = JsonSerializer.Serialize(MessageObj);
-        byte[] msg = Encoding.ASCII.GetBytes(json);
 
         DNSRecord dNSRecord = new DNSRecord
         {
@@ -69,23 +67,28 @@ class ClientUDP
         EndPoint remoteEP = (EndPoint)sender;
 
         //TODO: [Create and send HELLO]
-
+        Message? ResponseMessage = null;
         try
         {
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             // socket.SendTo(msg, msg.Length, SocketFlags.None, ServerEndpoint);
 
             //TODO: [Receive and print Welcome from server]
-            Message? ResponseMessage = SendMessage(socket, MessageObj, ServerEndpoint, remoteEP);
+            ResponseMessage = SendMessage(socket, MessageObj, ServerEndpoint, remoteEP);
             if (ResponseMessage != null)
             {
-                Console.WriteLine("=====Server Response======\n" + ResponseMessage);
-                Console.WriteLine("Response Content: " + ResponseMessage.Content);
+                Console.WriteLine("Server Response ======>\n" + ResponseMessage);
+                Console.WriteLine("Response Content =======> " + ResponseMessage.Content);
             }
 
             // TODO: [Create and send DNSLookup Message]
-
-            
+            ResponseMessage = SendMessage(socket, DNSLookupMessage, ServerEndpoint, remoteEP);
+            //TODO: [Receive and print DNSLookupReply from server]
+            if (ResponseMessage != null)
+            {
+                Console.WriteLine("Server Response ======>\n" + ResponseMessage);
+                Console.WriteLine("Response Content =======> " + ResponseMessage.Content);
+            }
 
 
 
@@ -99,7 +102,6 @@ class ClientUDP
 
 
 
-        //TODO: [Receive and print DNSLookupReply from server]
 
 
         //TODO: [Send Acknowledgment to Server]
@@ -126,8 +128,6 @@ class ClientUDP
         Message RespnseMessage = JsonSerializer.Deserialize<Message>(JsonResponse)!;
 
         return RespnseMessage;
-
-
 
     }
 }
