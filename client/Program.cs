@@ -39,11 +39,37 @@ class ClientUDP
     {
 
         //TODO: [Create endpoints and socket]
-
+        byte[] buffer = new byte[1000];
+        byte[] msg = new byte[1000];
+        Socket sock;
+        IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
+        IPEndPoint ServerEndpoint = new IPEndPoint(ipAddress, 32000);
+        IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
+        EndPoint remoteEP = (EndPoint)sender;
 
         //TODO: [Create and send HELLO]
 
-        //TODO: [Receive and print Welcome from server]
+        try
+        {
+            sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            Console.WriteLine("Sending HELLO to server");
+            msg = Encoding.ASCII.GetBytes("HELLO");
+            sock.SendTo(msg, msg.Length, SocketFlags.None, ServerEndpoint);
+
+            //TODO: [Receive and print Welcome from server]
+
+            int b = sock.ReceiveFrom(buffer, ref remoteEP);
+            string data = Encoding.ASCII.GetString(buffer, 0, b);
+            Console.WriteLine("Server said" + data);
+            sock.Close();
+        }
+        catch
+        {
+            Console.WriteLine("\n Socket Error. Terminating");
+        }
+
+
+
 
         // TODO: [Create and send DNSLookup Message]
 

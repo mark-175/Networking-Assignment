@@ -1,25 +1,31 @@
 {
   "format": 1,
   "restore": {
-    "C:\\HR\\Jaar 2\\Semester 4\\Analyse networking\\Networking-Assignment\\server\\server.csproj": {}
+    "C:\\Users\\joost\\OneDrive\\Documenten\\GitHub\\Networking-Assignment\\server\\server.csproj": {}
   },
   "projects": {
-    "C:\\HR\\Jaar 2\\Semester 4\\Analyse networking\\Networking-Assignment\\server\\server.csproj": {
+    "C:\\Users\\joost\\OneDrive\\Documenten\\GitHub\\Networking-Assignment\\server\\server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\HR\\Jaar 2\\Semester 4\\Analyse networking\\Networking-Assignment\\server\\server.csproj",
+        "projectUniqueName": "C:\\Users\\joost\\OneDrive\\Documenten\\GitHub\\Networking-Assignment\\server\\server.csproj",
         "projectName": "server",
-        "projectPath": "C:\\HR\\Jaar 2\\Semester 4\\Analyse networking\\Networking-Assignment\\server\\server.csproj",
-        "packagesPath": "C:\\Users\\marks\\.nuget\\packages\\",
-        "outputPath": "C:\\HR\\Jaar 2\\Semester 4\\Analyse networking\\Networking-Assignment\\server\\obj\\",
+        "projectPath": "C:\\Users\\joost\\OneDrive\\Documenten\\GitHub\\Networking-Assignment\\server\\server.csproj",
+        "packagesPath": "C:\\Users\\joost\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\joost\\OneDrive\\Documenten\\GitHub\\Networking-Assignment\\server\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\marks\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\joost\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -37,8 +43,7 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.100"
+        }
       },
       "frameworks": {
         "net8.0": {
@@ -54,30 +59,12 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[8.0.11, 8.0.11]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Host.win-x64",
-              "version": "[8.0.11, 8.0.11]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[8.0.11, 8.0.11]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[8.0.11, 8.0.11]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.201/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

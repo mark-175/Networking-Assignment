@@ -1,13 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "J9QB9Mt1sGM=",
+  "dgSpecHash": "bzd+2BM3n1dKF/4XLit9mQB2f5bGuRKR1YBQwRyqjWBO3TRxxSBpnqDjJ87/u6shxnJ3ISL+3q8S3osBO/Axfg==",
   "success": true,
-  "projectFilePath": "C:\\HR\\Jaar 2\\Semester 4\\Analyse networking\\Networking-Assignment\\client\\client.csproj",
-  "expectedPackageFiles": [
-    "C:\\Users\\marks\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.11\\microsoft.netcore.app.ref.8.0.11.nupkg.sha512",
-    "C:\\Users\\marks\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.11\\microsoft.windowsdesktop.app.ref.8.0.11.nupkg.sha512",
-    "C:\\Users\\marks\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.11\\microsoft.aspnetcore.app.ref.8.0.11.nupkg.sha512",
-    "C:\\Users\\marks\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\8.0.11\\microsoft.netcore.app.host.win-x64.8.0.11.nupkg.sha512"
-  ],
+  "projectFilePath": "C:\\Users\\joost\\OneDrive\\Documenten\\GitHub\\Networking-Assignment\\client\\client.csproj",
+  "expectedPackageFiles": [],
   "logs": []
 }

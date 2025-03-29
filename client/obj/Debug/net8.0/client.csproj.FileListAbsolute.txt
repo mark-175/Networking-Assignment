@@ -1,0 +1,15 @@
+C:\Users\joost\OneDrive\Documenten\GitHub\Networking-Assignment\client\bin\Debug\net8.0\client.exe
+C:\Users\joost\OneDrive\Documenten\GitHub\Networking-Assignment\client\bin\Debug\net8.0\client.deps.json
+C:\Users\joost\OneDrive\Documenten\GitHub\Networking-Assignment\client\bin\Debug\net8.0\client.runtimeconfig.json
+C:\Users\joost\OneDrive\Documenten\GitHub\Networking-Assignment\client\bin\Debug\net8.0\client.dll
+C:\Users\joost\OneDrive\Documenten\GitHub\Networking-Assignment\client\bin\Debug\net8.0\client.pdb
+C:\Users\joost\OneDrive\Documenten\GitHub\Networking-Assignment\client\obj\Debug\net8.0\client.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\joost\OneDrive\Documenten\GitHub\Networking-Assignment\client\obj\Debug\net8.0\client.AssemblyInfoInputs.cache
+C:\Users\joost\OneDrive\Documenten\GitHub\Networking-Assignment\client\obj\Debug\net8.0\client.AssemblyInfo.cs
+C:\Users\joost\OneDrive\Documenten\GitHub\Networking-Assignment\client\obj\Debug\net8.0\client.csproj.CoreCompileInputs.cache
+C:\Users\joost\OneDrive\Documenten\GitHub\Networking-Assignment\client\obj\Debug\net8.0\client.sourcelink.json
+C:\Users\joost\OneDrive\Documenten\GitHub\Networking-Assignment\client\obj\Debug\net8.0\client.dll
+C:\Users\joost\OneDrive\Documenten\GitHub\Networking-Assignment\client\obj\Debug\net8.0\refint\client.dll
+C:\Users\joost\OneDrive\Documenten\GitHub\Networking-Assignment\client\obj\Debug\net8.0\client.pdb
+C:\Users\joost\OneDrive\Documenten\GitHub\Networking-Assignment\client\obj\Debug\net8.0\client.genruntimeconfig.cache
+C:\Users\joost\OneDrive\Documenten\GitHub\Networking-Assignment\client\obj\Debug\net8.0\ref\client.dll
