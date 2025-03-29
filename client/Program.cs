@@ -33,27 +33,70 @@ class ClientUDP
     static string configFile = @"../Setting.json";
     static string configContent = File.ReadAllText(configFile);
     static Setting? setting = JsonSerializer.Deserialize<Setting>(configContent);
+    static byte[] buffer = new byte[1000];
 
 
     public static void start()
     {
 
+
         //TODO: [Create endpoints and socket]
-        byte[] buffer = new byte[1000];
+        Message MessageObj = new Message { MsgId = 1, MsgType = MessageType.Hello, Content = "Hello" };
+        string json = JsonSerializer.Serialize(MessageObj);
+        byte[] msg = Encoding.ASCII.GetBytes(json);
 
-        Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        DNSRecord dNSRecord = new DNSRecord
+        {
+            Type = "A",
+            Name = "www.test.com"
+        };
 
-        IPAddress IpAddress = IPAddress.Parse(setting.ServerIPAddress);
+        Message DNSLookupMessage = new Message
+        {
+            MsgId = 2,
+            MsgType = MessageType.DNSLookup,
+            Content = dNSRecord,
+        };
 
-        IPEndPoint ServerEndpoint = new IPEndPoint(IpAddress, setting.ServerPortNumber);
+        Socket socket;
+        IPAddress ServerIP = IPAddress.Parse(setting.ServerIPAddress);
 
-        IPEndPoint sender = new IPEndPoint(IPAddress.Parse(setting.ClientIPAddress), setting.ClientPortNumber);
+        IPEndPoint ServerEndpoint = new IPEndPoint(ServerIP, setting.ServerPortNumber);
+
+
+        IPAddress ClientIP = IPAddress.Parse(setting.ClientIPAddress);
+        IPEndPoint sender = new IPEndPoint(ClientIP, 2002);
+        EndPoint remoteEP = (EndPoint)sender;
 
         //TODO: [Create and send HELLO]
 
-        //TODO: [Receive and print Welcome from server]
+        try
+        {
+            socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            // socket.SendTo(msg, msg.Length, SocketFlags.None, ServerEndpoint);
 
-        // TODO: [Create and send DNSLookup Message]
+            //TODO: [Receive and print Welcome from server]
+            Message? ResponseMessage = SendMessage(socket, MessageObj, ServerEndpoint, remoteEP);
+            if (ResponseMessage != null)
+            {
+                Console.WriteLine("=====Server Response======\n" + ResponseMessage);
+                Console.WriteLine("Response Content: " + ResponseMessage.Content);
+            }
+
+            // TODO: [Create and send DNSLookup Message]
+
+            
+
+
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("An error occured:" + ex.Message);
+
+        }
+
+
 
 
         //TODO: [Receive and print DNSLookupReply from server]
@@ -67,6 +110,22 @@ class ClientUDP
         //TODO: [Receive and print End from server]
 
 
+
+
+
+    }
+
+    public static Message? SendMessage(Socket socket, Message MessageObj, EndPoint ServerEndpoint, EndPoint RemoteEndpoint)
+    {
+        string json = JsonSerializer.Serialize(MessageObj);
+        byte[] msg = Encoding.ASCII.GetBytes(json);
+        socket.SendTo(msg, msg.Length, SocketFlags.None, ServerEndpoint);
+        int b = socket.ReceiveFrom(buffer, ref RemoteEndpoint);
+
+        string JsonResponse = Encoding.ASCII.GetString(buffer, 0, b);
+        Message RespnseMessage = JsonSerializer.Deserialize<Message>(JsonResponse)!;
+
+        return RespnseMessage;
 
 
 
