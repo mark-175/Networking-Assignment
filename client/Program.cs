@@ -31,7 +31,7 @@ class ClientUDP
 {
 
     //TODO: [Deserialize Setting.json]
-    static string configFile = @"../Setting.json";
+    static string configFile = @"../../../../Setting.json";
     static string configContent = File.ReadAllText(configFile);
     static Setting? setting = JsonSerializer.Deserialize<Setting>(configContent);
 
@@ -80,9 +80,31 @@ class ClientUDP
 
 
         // TODO: [Create and send DNSLookup Message]
+        Message message_DNSLookup = new Message
+        {
+            MsgId = 3,
+            MsgType = MessageType.DNSLookup,
+            Content = "www.mywebsite.com"
+        };
+        string json2 = JsonSerializer.Serialize(message_DNSLookup);
+        try
+        {
+            sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            Console.WriteLine("Sending DNS Lookup to server");
+            msg = Encoding.ASCII.GetBytes(json2);
+            sock.SendTo(msg, msg.Length, SocketFlags.None, ServerEndpoint);
 
+            //TODO: [Receive and print DNSLookupReply from server]
 
-        //TODO: [Receive and print DNSLookupReply from server]
+            int b = sock.ReceiveFrom(buffer, ref remoteEP);
+            string data = Encoding.ASCII.GetString(buffer, 0, b);
+            Console.WriteLine("Server said " + JsonSerializer.Deserialize<Message>(data).Content);
+            sock.Close();
+        }
+        catch
+        {
+            Console.WriteLine("\n Socket Error. Terminating");
+        }
 
 
         //TODO: [Send Acknowledgment to Server]
