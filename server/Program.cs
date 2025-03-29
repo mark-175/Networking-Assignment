@@ -44,15 +44,47 @@ class ServerUDP
 
 
         // TODO: [Create a socket and endpoints and bind it to the server IP address and port number]
+        byte[] buffer = new byte[1000];
+        Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        IPAddress IpAddress = IPAddress.Parse("127.0.0.1");
+        IPEndPoint LocalEndpoint = new IPEndPoint(IpAddress, 32000);
 
-
-
+        IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
+        EndPoint remoteEp = sender;
+        socket.Bind(LocalEndpoint);
         // TODO:[Receive and print a received Message from the client]
 
-
-
-
         // TODO:[Receive and print Hello]
+        Message data = null;
+        try
+        {
+            while (true)
+            {
+                Console.WriteLine("Waiting for messages...");
+                int b = socket.ReceiveFrom(buffer, ref remoteEp);
+
+                string json = Encoding.ASCII.GetString(buffer, 0, b);
+                data = JsonSerializer.Deserialize<Message>(json)!;
+
+                Message message = new Message { MsgId = 1, MsgType = MessageType.Hello, Content = "Hello" };
+                Console.WriteLine(message);
+                Console.WriteLine("Hello");
+                string ToSend = JsonSerializer.Serialize(message);
+                byte[] msg = Encoding.ASCII.GetBytes(json);
+                socket.SendTo(msg, msg.Length, SocketFlags.None, remoteEp);
+
+            }
+
+        }
+        catch (ArgumentNullException Ex)
+        {
+            Message message = new Message { MsgId = 1, MsgType = MessageType.Error, Content = $"Error while Deserializing the message : {Ex.Message}" };
+            string json = JsonSerializer.Serialize(message);
+            byte[] msg = Encoding.ASCII.GetBytes(json);
+            socket.SendTo(msg, msg.Length, SocketFlags.None, remoteEp);
+        }
+
+
 
 
 

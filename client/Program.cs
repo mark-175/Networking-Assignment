@@ -39,8 +39,16 @@ class ClientUDP
     {
 
         //TODO: [Create endpoints and socket]
+        byte[] buffer = new byte[1000];
 
+        Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
+        IPAddress IpAddress = IPAddress.Parse("127.0.0.1");
+
+        IPEndPoint ServerEndpoint = new IPEndPoint(IpAddress, 32000);
+
+        IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
+        
         //TODO: [Create and send HELLO]
 
         //TODO: [Receive and print Welcome from server]
