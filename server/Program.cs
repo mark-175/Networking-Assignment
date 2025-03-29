@@ -98,13 +98,9 @@ class ServerUDP
 
         // TODO:[If found Send DNSLookupReply containing the DNSRecord]
 
-
-
         // TODO:[If not found Send Error]
 
-
         // TODO:[Receive Ack about correct DNSLookupReply from the client]
-
 
         // TODO:[If no further requests receieved send End to the client]
 

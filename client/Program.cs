@@ -43,12 +43,12 @@ class ClientUDP
 
         Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
-        IPAddress IpAddress = IPAddress.Parse("127.0.0.1");
+        IPAddress IpAddress = IPAddress.Parse(setting.ServerIPAddress);
 
-        IPEndPoint ServerEndpoint = new IPEndPoint(IpAddress, 32000);
+        IPEndPoint ServerEndpoint = new IPEndPoint(IpAddress, setting.ServerPortNumber);
 
-        IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
-        
+        IPEndPoint sender = new IPEndPoint(IPAddress.Parse(setting.ClientIPAddress), setting.ClientPortNumber);
+
         //TODO: [Create and send HELLO]
 
         //TODO: [Receive and print Welcome from server]
