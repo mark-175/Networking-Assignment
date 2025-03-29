@@ -49,7 +49,7 @@ class ServerUDP
         string data = null;
         string json = null;
         Socket sock;
-        IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
+        IPAddress ipAddress = IPAddress.Parse(setting.ServerIPAddress);
         IPEndPoint localEndpoint = new IPEndPoint(ipAddress, 32000);
         IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
         EndPoint remoteEP = (EndPoint)sender;

@@ -44,7 +44,7 @@ class ClientUDP
         byte[] msg = new byte[1000];
 
         Socket sock;
-        IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
+        IPAddress ipAddress = IPAddress.Parse(setting.ClientIPAddress);
         IPEndPoint ServerEndpoint = new IPEndPoint(ipAddress, 32000);
         IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
         EndPoint remoteEP = (EndPoint)sender;
@@ -68,7 +68,7 @@ class ClientUDP
 
             int b = sock.ReceiveFrom(buffer, ref remoteEP);
             string data = Encoding.ASCII.GetString(buffer, 0, b);
-            Console.WriteLine("Server said" + JsonSerializer.Deserialize<Message>(data).MsgType);
+            Console.WriteLine("Server said " + JsonSerializer.Deserialize<Message>(data).MsgType);
             sock.Close();
         }
         catch
