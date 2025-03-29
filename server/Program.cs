@@ -47,8 +47,8 @@ class ServerUDP
         byte[] buffer = new byte[1000];
         byte[] msg = new byte[1000];
         string data = null;
+        string json = null;
         Socket sock;
-        int MsgCounter = 0;
         IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
         IPEndPoint localEndpoint = new IPEndPoint(ipAddress, 32000);
         IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
@@ -61,24 +61,31 @@ class ServerUDP
             sock = new Socket(AddressFamily.InterNetwork,
             SocketType.Dgram, ProtocolType.Udp);
             sock.Bind(localEndpoint);
-            while (MsgCounter < 10)
+            while (true)
             {
                 Console.WriteLine("\n Waiting for the next client message..");
                 int b = sock.ReceiveFrom(buffer, ref remoteEP);
                 data = Encoding.ASCII.GetString(buffer, 0, b);
-                Console.WriteLine("A message received from " + remoteEP.ToString() + " " + data);
+                Message clientMsg = JsonSerializer.Deserialize<Message>(data);
+                Console.WriteLine("A message received from " + remoteEP.ToString() + " " + clientMsg);
 
                 // TODO:[Receive and print Hello]
-
-                Console.WriteLine("Hello");
+                if (clientMsg.MsgType == MessageType.Hello)
+                {
+                    Console.WriteLine("Hello");
+                }
 
                 // TODO:[Send Welcome to the client]
-
-                msg = Encoding.ASCII.GetBytes(" Welcome");
+                Message message = new Message
+                {
+                    MsgId = 1,
+                    MsgType = MessageType.Welcome,
+                    Content = "Welkom"
+                };
+                json = JsonSerializer.Serialize(message);
+                msg = Encoding.ASCII.GetBytes(json);
                 sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEP);
-                MsgCounter++;
             }
-            sock.Close();
         }
         catch
         {

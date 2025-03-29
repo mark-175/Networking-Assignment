@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Net;
+using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
@@ -41,6 +42,7 @@ class ClientUDP
         //TODO: [Create endpoints and socket]
         byte[] buffer = new byte[1000];
         byte[] msg = new byte[1000];
+
         Socket sock;
         IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
         IPEndPoint ServerEndpoint = new IPEndPoint(ipAddress, 32000);
@@ -48,19 +50,25 @@ class ClientUDP
         EndPoint remoteEP = (EndPoint)sender;
 
         //TODO: [Create and send HELLO]
-
+        Message message = new Message
+        {
+            MsgId = 1,
+            MsgType = MessageType.Hello,
+            Content = "ikbendata"
+        };
+        string json = JsonSerializer.Serialize(message);
         try
         {
             sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             Console.WriteLine("Sending HELLO to server");
-            msg = Encoding.ASCII.GetBytes("HELLO");
+            msg = Encoding.ASCII.GetBytes(json);
             sock.SendTo(msg, msg.Length, SocketFlags.None, ServerEndpoint);
 
             //TODO: [Receive and print Welcome from server]
 
             int b = sock.ReceiveFrom(buffer, ref remoteEP);
             string data = Encoding.ASCII.GetString(buffer, 0, b);
-            Console.WriteLine("Server said" + data);
+            Console.WriteLine("Server said" + JsonSerializer.Deserialize<Message>(data).MsgType);
             sock.Close();
         }
         catch
