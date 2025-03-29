@@ -56,6 +56,13 @@ class ClientUDP
             Content = dNSRecord,
         };
 
+        Message ACKMessage = new Message
+        {
+            MsgId = 3,
+            MsgType = MessageType.Ack,
+            Content = "Ack message",
+        };
+
         Socket socket;
         IPAddress ServerIP = IPAddress.Parse(setting.ServerIPAddress);
 
@@ -72,22 +79,40 @@ class ClientUDP
         {
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             // socket.SendTo(msg, msg.Length, SocketFlags.None, ServerEndpoint);
+            Console.WriteLine("Client Side Started...\n");
 
             //TODO: [Receive and print Welcome from server]
             ResponseMessage = SendMessage(socket, MessageObj, ServerEndpoint, remoteEP);
-            if (ResponseMessage != null)
-            {
-                Console.WriteLine("Server Response ======>\n" + ResponseMessage);
-                Console.WriteLine("Response Content =======> " + ResponseMessage.Content);
-            }
+            Console.WriteLine("Sending a Hello message\n=========\n");
+            PrintMessage(ResponseMessage);
 
-            // TODO: [Create and send DNSLookup Message]
-            ResponseMessage = SendMessage(socket, DNSLookupMessage, ServerEndpoint, remoteEP);
-            //TODO: [Receive and print DNSLookupReply from server]
-            if (ResponseMessage != null)
+            for (int i = 0; i < 8; i++)
             {
-                Console.WriteLine("Server Response ======>\n" + ResponseMessage);
-                Console.WriteLine("Response Content =======> " + ResponseMessage.Content);
+                if (i == 4)
+                {
+                    DNSLookupMessage = new Message
+                    {
+                        MsgId = 5,
+                        MsgType = MessageType.DNSLookup,
+                        Content = new DNSRecord
+                        {
+                            Type = "Z",
+                            Name = "unkown.com"
+                        },
+                    };
+                }
+                // TODO: [Create and send DNSLookup Message]
+                ResponseMessage = SendMessage(socket, DNSLookupMessage, ServerEndpoint, remoteEP);
+                Console.WriteLine("Sending a DNSLookup message\n=========\n");
+
+                //TODO: [Receive and print DNSLookupReply from server]
+                PrintMessage(ResponseMessage);
+
+                //TODO: [Send Acknowledgment to Server]
+                ACKMessage.MsgId = ResponseMessage.MsgId;
+                ResponseMessage = SendMessage(socket, MessageObj, ServerEndpoint, remoteEP);
+                Console.WriteLine("Sending an Acknowledgment message\n=========\n");
+                PrintMessage(ResponseMessage);
             }
 
 
@@ -104,7 +129,6 @@ class ClientUDP
 
 
 
-        //TODO: [Send Acknowledgment to Server]
 
         // TODO: [Send next DNSLookup to server]
         // repeat the process until all DNSLoopkups (correct and incorrect onces) are sent to server and the replies with DNSLookupReply
@@ -130,4 +154,19 @@ class ClientUDP
         return RespnseMessage;
 
     }
+
+    private static void PrintMessage(Message? message)
+    {
+        if (message == null)
+        {
+            Console.WriteLine("No Message Recieved");
+        }
+        else
+        {
+            Console.WriteLine(message);
+            Console.WriteLine(message.Content);
+            Console.WriteLine($"Recieved a message of type {message.MsgType}\n");
+        }
+    }
+
 }
