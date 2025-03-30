@@ -62,6 +62,7 @@ class ServerUDP
 
                 // TODO:[Receive and print a received Message from the client]
                 ClientRequest = RecieveMessage(socket, ref remoteEp);
+                Console.WriteLine("\n========= Message recieved =========\n");
                 PrintMessage(ClientRequest);
                 switch (ClientRequest.MsgType)
                 {
@@ -72,7 +73,7 @@ class ServerUDP
 
                         ServerResponse = new Message { MsgId = ClientRequest.MsgId, MsgType = MessageType.Welcome, Content = "Welcome" };
                         SendMessage(socket, ServerResponse, remoteEp);
-                        Console.WriteLine("Welcome Message Sent\n============\n");
+                        Console.WriteLine("\n============ Welcome Message Sent ============\n");
                         break;
                     case MessageType.DNSLookup:
 
@@ -83,10 +84,20 @@ class ServerUDP
 
                         if (ServerResponse.MsgType == MessageType.Error)
                         {
+                            SendMessage(socket, ServerResponse, remoteEp);
+                            Console.WriteLine($"\n============ {ServerResponse.MsgType} Message Sent ============\n");
+
+
                             ServerResponse = new Message { MsgId = ServerResponse.MsgId, MsgType = MessageType.End, Content = "End Message" };
                         }
                         SendMessage(socket, ServerResponse, remoteEp);
-                        Console.WriteLine($"{ServerResponse.MsgType} Message Sent\n============\n");
+                        Console.WriteLine($"\n============ {ServerResponse.MsgType} Message Sent ============\n");
+                        break;
+                    case MessageType.Ack:
+                        ServerResponse = new Message { MsgId = ClientRequest.MsgId, MsgType = MessageType.End, Content = "End message" };
+                        SendMessage(socket, ServerResponse, remoteEp);
+                        Console.WriteLine($"\n============ {ServerResponse.MsgType} Message Sent ============\n");
+
                         break;
                     default:
                         break;
@@ -155,8 +166,8 @@ class ServerUDP
         else
         {
             Console.WriteLine($"Recieved a message of type {message.MsgType}");
-            Console.WriteLine(message);
-            Console.WriteLine(message.Content);
+            Console.WriteLine("Message Id: " + message.MsgId);
+            Console.WriteLine("Content: " + message.Content);
         }
     }
 

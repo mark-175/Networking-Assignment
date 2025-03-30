@@ -83,12 +83,14 @@ class ClientUDP
 
             //TODO: [Receive and print Welcome from server]
             ResponseMessage = SendMessage(socket, MessageObj, ServerEndpoint, remoteEP);
-            Console.WriteLine("Sending a Hello message\n=========\n");
+            Console.WriteLine("\n========= Sending a Hello message =========\n");
             PrintMessage(ResponseMessage);
 
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 4; i++)
             {
-                if (i == 4)
+                Console.WriteLine($"Count: {i}");
+
+                if (i >= 2)
                 {
                     DNSLookupMessage = new Message
                     {
@@ -103,15 +105,15 @@ class ClientUDP
                 }
                 // TODO: [Create and send DNSLookup Message]
                 ResponseMessage = SendMessage(socket, DNSLookupMessage, ServerEndpoint, remoteEP);
-                Console.WriteLine("Sending a DNSLookup message\n=========\n");
+                Console.WriteLine("\n========= Sending a DNSLookup message =========\n");
 
                 //TODO: [Receive and print DNSLookupReply from server]
                 PrintMessage(ResponseMessage);
 
                 //TODO: [Send Acknowledgment to Server]
                 ACKMessage.MsgId = ResponseMessage.MsgId;
-                ResponseMessage = SendMessage(socket, MessageObj, ServerEndpoint, remoteEP);
-                Console.WriteLine("Sending an Acknowledgment message\n=========\n");
+                ResponseMessage = SendMessage(socket, ACKMessage, ServerEndpoint, remoteEP);
+                Console.WriteLine("\n========= Sending an Acknowledgment message =========\n");
                 PrintMessage(ResponseMessage);
             }
 
@@ -163,9 +165,9 @@ class ClientUDP
         }
         else
         {
-            Console.WriteLine(message);
-            Console.WriteLine(message.Content);
             Console.WriteLine($"Recieved a message of type {message.MsgType}\n");
+            Console.WriteLine("Message Id: " + message.MsgId);
+            Console.WriteLine("Content: " + message.Content);
         }
     }
 
