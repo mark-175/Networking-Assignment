@@ -165,9 +165,19 @@ class ServerUDP
         }
         else
         {
-            Console.WriteLine($"Recieved a message of type {message.MsgType}");
-            Console.WriteLine("Message Id: " + message.MsgId);
-            Console.WriteLine("Content: " + message.Content);
+            Console.WriteLine($"Recieved a message of type {message.MsgType} | Id : {message.MsgId}");
+
+            if (message.Content is DNSRecord record)
+            {
+                Console.WriteLine("-----------==============Hello===========----------");
+                Console.WriteLine($"Content:");
+                Console.WriteLine($"Type: {record.Type} | Name: {record.Name} | Value: {record.Value} | TTL: {record.TTL} | Priority: {record.Priority}");
+                return;
+            }
+
+
+            Console.WriteLine($"Content: {message.Content}");
+
         }
     }
 

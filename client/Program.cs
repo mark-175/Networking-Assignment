@@ -159,6 +159,7 @@ class ClientUDP
 
     private static void PrintMessage(Message? message)
     {
+        Thread.Sleep(2000);
         if (message == null)
         {
             Console.WriteLine("No Message Recieved");
