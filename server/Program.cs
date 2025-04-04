@@ -82,22 +82,20 @@ class ServerUDP
                         ServerResponse = DNSLookUp("DNSrecords.json", ClientRequest);
 
 
-                        if (ServerResponse.MsgType == MessageType.Error)
-                        {
-                            SendMessage(socket, ServerResponse, remoteEp);
-                            Console.WriteLine($"\n============ {ServerResponse.MsgType} Message Sent ============\n");
-
-
-                            ServerResponse = new Message { MsgId = ServerResponse.MsgId, MsgType = MessageType.End, Content = "End Message" };
-                        }
+                        // if (ServerResponse.MsgType == MessageType.Error)
+                        // {
                         SendMessage(socket, ServerResponse, remoteEp);
                         Console.WriteLine($"\n============ {ServerResponse.MsgType} Message Sent ============\n");
+                        //     continue;
+                        // }
+                        // ServerResponse = new Message { MsgId = ServerResponse.MsgId, MsgType = MessageType.End, Content = "End Message" };
+                        // SendMessage(socket, ServerResponse, remoteEp);
+                        // Console.WriteLine($"\n============ {ServerResponse.MsgType} Message Sent ============\n");
                         break;
                     case MessageType.Ack:
                         ServerResponse = new Message { MsgId = ClientRequest.MsgId, MsgType = MessageType.End, Content = "End message" };
                         SendMessage(socket, ServerResponse, remoteEp);
                         Console.WriteLine($"\n============ {ServerResponse.MsgType} Message Sent ============\n");
-
                         break;
                     default:
                         break;

@@ -88,8 +88,6 @@ class ClientUDP
 
             for (int i = 0; i < 4; i++)
             {
-                Console.WriteLine($"Count: {i}");
-
                 if (i >= 2)
                 {
                     DNSLookupMessage = new Message
@@ -108,14 +106,22 @@ class ClientUDP
                 Console.WriteLine("\n========= Sending a DNSLookup message =========\n");
 
                 //TODO: [Receive and print DNSLookupReply from server]
-                PrintMessage(ResponseMessage);
 
-                //TODO: [Send Acknowledgment to Server]
-                ACKMessage.MsgId = ResponseMessage.MsgId;
-                ResponseMessage = SendMessage(socket, ACKMessage, ServerEndpoint, remoteEP);
-                Console.WriteLine("\n========= Sending an Acknowledgment message =========\n");
                 PrintMessage(ResponseMessage);
+                //TODO: [Send Acknowledgment to Server]
+                // TODO: [Send next DNSLookup to server]
+                // repeat the process until all DNSLoopkups (correct and incorrect onces) are sent to server and the replies with DNSLookupReply
+
+                //TODO: [Receive and print End from server]
+                if (ResponseMessage.MsgType != MessageType.Error)
+                {
+                    ACKMessage.Content = ResponseMessage.MsgId;
+                    Console.WriteLine("\n========= Sending an Acknowledgment message =========\n");
+                    ResponseMessage = SendMessage(socket, ACKMessage, ServerEndpoint, remoteEP);
+                    PrintMessage(ResponseMessage);
+                }
             }
+            socket.Close();
 
 
 
@@ -125,20 +131,6 @@ class ClientUDP
             Console.WriteLine("An error occured:" + ex.Message);
 
         }
-
-
-
-
-
-
-
-        // TODO: [Send next DNSLookup to server]
-        // repeat the process until all DNSLoopkups (correct and incorrect onces) are sent to server and the replies with DNSLookupReply
-
-        //TODO: [Receive and print End from server]
-
-
-
 
 
     }
