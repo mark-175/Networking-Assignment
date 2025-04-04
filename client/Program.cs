@@ -64,12 +64,16 @@ class ClientUDP
         };
 
         Socket socket;
-        IPAddress ServerIP = IPAddress.Parse(setting.ServerIPAddress);
+        if (setting == null)
+        {
+            setting = new Setting { ServerPortNumber = 2001, ServerIPAddress = "127.0.0.1", ClientPortNumber = 2002, ClientIPAddress = "127.0.0.1" };
+        }
+        IPAddress ServerIP = IPAddress.Parse(setting.ServerIPAddress != null ? setting.ServerIPAddress : "127.0.0.1");
 
         IPEndPoint ServerEndpoint = new IPEndPoint(ServerIP, setting.ServerPortNumber);
 
 
-        IPAddress ClientIP = IPAddress.Parse(setting.ClientIPAddress);
+        IPAddress ClientIP = IPAddress.Parse(setting.ClientIPAddress != null ? setting.ClientIPAddress : "127.0.0.1");
         IPEndPoint sender = new IPEndPoint(ClientIP, 2002);
         EndPoint remoteEP = (EndPoint)sender;
 
@@ -84,7 +88,11 @@ class ClientUDP
             //TODO: [Receive and print Welcome from server]
             ResponseMessage = SendMessage(socket, MessageObj, ServerEndpoint, remoteEP);
             Console.WriteLine("\n========= Sending a Hello message =========\n");
-            PrintMessage(ResponseMessage);
+            PrintSentMessage(MessageObj);
+
+
+            Console.WriteLine("\n========= Message recieved =========\n");
+            PrintRecievedMessage(ResponseMessage!);
 
             for (int i = 0; i < 4; i++)
             {
@@ -104,23 +112,28 @@ class ClientUDP
                 // TODO: [Create and send DNSLookup Message]
                 ResponseMessage = SendMessage(socket, DNSLookupMessage, ServerEndpoint, remoteEP);
                 Console.WriteLine("\n========= Sending a DNSLookup message =========\n");
-
+                PrintSentMessage(DNSLookupMessage);
                 //TODO: [Receive and print DNSLookupReply from server]
 
-                PrintMessage(ResponseMessage);
+                Console.WriteLine("\n========= Message recieved =========\n");
+                PrintRecievedMessage(ResponseMessage!);
                 //TODO: [Send Acknowledgment to Server]
                 // TODO: [Send next DNSLookup to server]
                 // repeat the process until all DNSLoopkups (correct and incorrect onces) are sent to server and the replies with DNSLookupReply
 
                 //TODO: [Receive and print End from server]
-                if (ResponseMessage.MsgType != MessageType.Error)
+                if (ResponseMessage != null && ResponseMessage.MsgType != MessageType.Error)
                 {
                     ACKMessage.Content = ResponseMessage.MsgId;
                     Console.WriteLine("\n========= Sending an Acknowledgment message =========\n");
                     ResponseMessage = SendMessage(socket, ACKMessage, ServerEndpoint, remoteEP);
-                    PrintMessage(ResponseMessage);
+                    PrintSentMessage(ACKMessage);
+                    Console.WriteLine("\n========= Message recieved =========\n");
+
+                    PrintRecievedMessage(ResponseMessage!);
                 }
             }
+            Console.WriteLine("\n========= Closing connection =========\n");
             socket.Close();
 
 
@@ -149,19 +162,68 @@ class ClientUDP
 
     }
 
-    private static void PrintMessage(Message? message)
+    private static void PrintRecievedMessage(Message message)
     {
         Thread.Sleep(2000);
         if (message == null)
         {
-            Console.WriteLine("No Message Recieved");
+            Console.WriteLine("No Message recieved");
         }
         else
         {
-            Console.WriteLine($"Recieved a message of type {message.MsgType}\n");
-            Console.WriteLine("Message Id: " + message.MsgId);
-            Console.WriteLine("Content: " + message.Content);
+            Console.WriteLine($"Recieved a message of type {message.MsgType} | Id : {message.MsgId}");
+            if (message.Content is JsonElement jsonElement)
+            {
+                try
+                {
+                    var record = JsonSerializer.Deserialize<DNSRecord>(jsonElement.GetRawText());
+                    if (record is not null)
+                    {
+                        Console.WriteLine("Content:");
+                        Console.WriteLine($"Type: {record.Type} | Name: {record.Name} | Value: {record.Value ?? "No Value provided"} | TTL: {(record.TTL.HasValue ? record.TTL : "No value provided")} | Priority: {(record.Priority.HasValue ? record.Priority.Value.ToString() : "No value provided")}");
+                        return;
+                    }
+                }
+                catch (JsonException e)
+                {
+                    if (message.MsgType == MessageType.DNSLookup || message.MsgType == MessageType.DNSLookupReply)
+                    {
+                        Console.WriteLine("An unexpected error has occured: " + e.Message);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("An unexpected error has occured: " + e.Message);
+
+                }
+            }
+            Console.WriteLine($"Content: {message.Content}");
         }
     }
+    private static void PrintSentMessage(Message message)
+    {
+        Thread.Sleep(2000);
+        Console.WriteLine($"Sending a message of type {message.MsgType} | Id : {message.MsgId}");
 
+        try
+        {
+            if (message.Content!.GetType() == typeof(DNSRecord))
+            {
+                var record = (DNSRecord)message.Content!;
+                Console.WriteLine("Content:");
+                Console.WriteLine($"Type: {record.Type} | Name: {record.Name} | Value: {record.Value ?? "No Value provided"} | TTL: {(record.TTL.HasValue ? record.TTL : "No value provided")} | Priority: {(record.Priority.HasValue ? record.Priority.Value.ToString() : "No value provided")}");
+                return;
+
+            }
+
+        }
+
+        catch (Exception e)
+        {
+
+            Console.WriteLine("An unexpected error has occured: " + e.Message);
+        }
+
+        Console.WriteLine($"Content: {message.Content}");
+    }
 }

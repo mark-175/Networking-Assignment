@@ -10,6 +10,7 @@ namespace LibData
         public int MsgId { get; set; }
         public MessageType MsgType { get; set; }
         public Object? Content { get; set; }
+
     }
 
     public enum MessageType

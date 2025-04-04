@@ -54,6 +54,7 @@ class ServerUDP
         socket.Bind(LocalEndpoint);
         Message? ClientRequest = null;
         Message? ServerResponse = null;
+        bool HelloRecieved = false;
         try
         {
             while (true)
@@ -62,18 +63,24 @@ class ServerUDP
 
                 // TODO:[Receive and print a received Message from the client]
                 ClientRequest = RecieveMessage(socket, ref remoteEp);
-                Console.WriteLine("\n========= Message recieved =========\n");
-                PrintMessage(ClientRequest);
+
+                if (ClientRequest.MsgType != MessageType.Hello && !HelloRecieved)
+                {
+                    Console.WriteLine("\n========= Send Error to client =========\n");
+                    ServerResponse = new Message { MsgId = ClientRequest.MsgId, MsgType = MessageType.Error, Content = "Cannot send any messages before the handshake" };
+                    SendMessage(socket, ServerResponse, remoteEp);
+                    continue;
+                }
+
                 switch (ClientRequest.MsgType)
                 {
                     case MessageType.Hello:
                         // TODO:[Receive and print Hello] Done above
 
                         // TODO:[Send Welcome to the client]
-
+                        HelloRecieved = true;
                         ServerResponse = new Message { MsgId = ClientRequest.MsgId, MsgType = MessageType.Welcome, Content = "Welcome" };
                         SendMessage(socket, ServerResponse, remoteEp);
-                        Console.WriteLine("\n============ Welcome Message Sent ============\n");
                         break;
                     case MessageType.DNSLookup:
 
@@ -82,20 +89,12 @@ class ServerUDP
                         ServerResponse = DNSLookUp("DNSrecords.json", ClientRequest);
 
 
-                        // if (ServerResponse.MsgType == MessageType.Error)
-                        // {
                         SendMessage(socket, ServerResponse, remoteEp);
-                        Console.WriteLine($"\n============ {ServerResponse.MsgType} Message Sent ============\n");
-                        //     continue;
-                        // }
-                        // ServerResponse = new Message { MsgId = ServerResponse.MsgId, MsgType = MessageType.End, Content = "End Message" };
-                        // SendMessage(socket, ServerResponse, remoteEp);
-                        // Console.WriteLine($"\n============ {ServerResponse.MsgType} Message Sent ============\n");
+
                         break;
                     case MessageType.Ack:
                         ServerResponse = new Message { MsgId = ClientRequest.MsgId, MsgType = MessageType.End, Content = "End message" };
                         SendMessage(socket, ServerResponse, remoteEp);
-                        Console.WriteLine($"\n============ {ServerResponse.MsgType} Message Sent ============\n");
                         break;
                     default:
                         break;
@@ -142,6 +141,8 @@ class ServerUDP
         byte[] msg = Encoding.ASCII.GetBytes(json);
         socket.SendTo(msg, msg.Length, SocketFlags.None, RemoteEp);
 
+        Console.WriteLine($"\n============ {MessageObj.MsgType} Message Sent ============\n");
+        PrintSentMessage(MessageObj);
     }
 
 
@@ -151,33 +152,75 @@ class ServerUDP
         // TODO:[Receive and print a received Message from the client]
         string json = Encoding.ASCII.GetString(buffer, 0, b);
         Message Request = JsonSerializer.Deserialize<Message>(json)!;
+        Console.WriteLine("\n========= Message recieved =========\n");
+        PrintRecievedMessage(Request);
 
         return Request;
     }
 
-    private static void PrintMessage(Message message)
+    private static void PrintRecievedMessage(Message message)
     {
         if (message == null)
         {
             Console.WriteLine("No Message Recieved");
+            return;
         }
-        else
+
+        Console.WriteLine($"Recieved a message of type {message.MsgType} | Id : {message.MsgId}");
+
+
+        if (message.Content is JsonElement jsonElement)
         {
-            Console.WriteLine($"Recieved a message of type {message.MsgType} | Id : {message.MsgId}");
-
-            if (message.Content is DNSRecord record)
+            try
             {
-                Console.WriteLine("-----------==============Hello===========----------");
-                Console.WriteLine($"Content:");
-                Console.WriteLine($"Type: {record.Type} | Name: {record.Name} | Value: {record.Value} | TTL: {record.TTL} | Priority: {record.Priority}");
-                return;
+                var record = JsonSerializer.Deserialize<DNSRecord>(jsonElement.GetRawText());
+                if (record is not null)
+                {
+                    Console.WriteLine("Content:");
+                    Console.WriteLine($"Type: {record.Type} | Name: {record.Name} | Value: {record.Value ?? "No Value provided"} | TTL: {(record.TTL.HasValue ? record.TTL : "No value provided")} | Priority: {(record.Priority.HasValue ? record.Priority.Value.ToString() : "No value provided")}");
+                    return;
+                }
             }
+            catch (JsonException e)
+            {
+                if (message.MsgType == MessageType.DNSLookup || message.MsgType == MessageType.DNSLookupReply)
+                {
+                    Console.WriteLine("An unexpected error has occured: " + e.Message);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("An unexpected error has occured: " + e.Message);
 
-
+            }
             Console.WriteLine($"Content: {message.Content}");
-
         }
     }
+    private static void PrintSentMessage(Message message)
+    {
+        Console.WriteLine($"Sending a message of type {message.MsgType} | Id : {message.MsgId}");
+
+        try
+        {
+            if (message.Content!.GetType() == typeof(DNSRecord))
+            {
+                var record = (DNSRecord)message.Content!;
+                Console.WriteLine("Content:");
+                Console.WriteLine($"Type: {record.Type} | Name: {record.Name} | Value: {record.Value ?? "No Value provided"} | TTL: {(record.TTL.HasValue ? record.TTL : "No value provided")} | Priority: {(record.Priority.HasValue ? record.Priority.Value.ToString() : "No value provided")}");
+                return;
+
+            }
+
+        }
+        catch (Exception e)
+        {
+
+            Console.WriteLine("An unexpected error has occured: " + e.Message);
+        }
+
+        Console.WriteLine($"Content: {message.Content}");
+    }
+
 
     private static Message DNSLookUp(string path, Message LookUpRequest)
     {
@@ -209,29 +252,4 @@ class ServerUDP
 
     }
 
-    /*
-    After receiving the DNSLookup the server will query the given JSON-file
-    based on the type and the name of the DNSRecord included in the request
-    (each DNSLookup-message must contain a type and name).After receiving the DNSLookup the server will query the given JSON-file
-    based on the type and the name of the DNSRecord included in the request
-    (each DNSLookup-message must contain a type and name).
-    The server now has two options:
-    • [Option 1] If the query is successful and a record is found a complete
-    DNSRecord will be created and sent as a content in the
-    DNSLookupReply-message to the client. No new MsgId will be assigned
-    to the reply message, but it will have the same MsgId as the
-    DNSLookup-message.
-    • [Option 2] If the query is unsuccessful an Error message will be created
-    and sent to the client.*/
-
 }
-
-
-
-
-
-
-// if (LookUpRequest.MsgType != MessageType.DNSLookup)
-// {
-//     return new Message {MsgId = LookUpRequest.MsgId, MsgType = MessageType.Error, Content ="Not a DNS LookUp message "};
-// }
